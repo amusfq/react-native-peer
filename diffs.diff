@@ -1,0 +1,144 @@
+diff --git a/lib/api.ts b/lib/api.ts
+index 9c34d26..ace0ebe 100644
+--- a/lib/api.ts
++++ b/lib/api.ts
+@@ -9,11 +9,11 @@ export class API {
+ 	private _buildRequest(method: string): Promise<Response> {
+ 		const protocol = this._options.secure ? "https" : "http";
+ 		const { host, port, path, key } = this._options;
+-		const url = new URL(`${protocol}://${host}:${port}${path}${key}/${method}`);
++		const baseUrl = `${protocol}://${host}:${port}${path}${key}/${method}`;
+ 		// TODO: Why timestamp, why random?
+-		url.searchParams.set("ts", `${Date.now()}${Math.random()}`);
+-		url.searchParams.set("version", version);
+-		return fetch(url.href, {
++		const params = `ts=${Date.now()}${Math.random()}&version=${version}`
++		const url = `${baseUrl}?${params}`;
++		return fetch(url, {
+ 			referrerPolicy: this._options.referrerPolicy,
+ 		});
+ 	}
+diff --git a/lib/dataconnection/StreamConnection/MsgPack.ts b/lib/dataconnection/StreamConnection/MsgPack.ts
+index c2d9881..e4d362b 100644
+--- a/lib/dataconnection/StreamConnection/MsgPack.ts
++++ b/lib/dataconnection/StreamConnection/MsgPack.ts
+@@ -1,6 +1,6 @@
+ import { decodeMultiStream, Encoder } from "@msgpack/msgpack";
+-import { StreamConnection } from "./StreamConnection.js";
+-import type { Peer } from "../../peer.js";
++import { StreamConnection } from "./StreamConnection";
++import type { Peer } from "../../peer";
+ 
+ export class MsgPack extends StreamConnection {
+ 	readonly serialization = "MsgPack";
+diff --git a/lib/dataconnection/StreamConnection/StreamConnection.ts b/lib/dataconnection/StreamConnection/StreamConnection.ts
+index 6a8203c..4ff0a85 100644
+--- a/lib/dataconnection/StreamConnection/StreamConnection.ts
++++ b/lib/dataconnection/StreamConnection/StreamConnection.ts
+@@ -1,6 +1,6 @@
+-import logger from "../../logger.js";
+-import type { Peer } from "../../peer.js";
+-import { DataConnection } from "../DataConnection.js";
++import logger from "../../logger";
++import type { Peer } from "../../peer";
++import { DataConnection } from "../DataConnection";
+ 
+ export abstract class StreamConnection extends DataConnection {
+ 	private _CHUNK_SIZE = 1024 * 8 * 4;
+diff --git a/lib/global.ts b/lib/global.ts
+index c1ddf81..bc54c9a 100644
+--- a/lib/global.ts
++++ b/lib/global.ts
+@@ -1,9 +1,2 @@
+ import { util } from "./util";
+ import { Peer } from "./peer";
+-
+-(<any>window).peerjs = {
+-	Peer,
+-	util,
+-};
+-/** @deprecated Should use peerjs namespace */
+-(<any>window).Peer = Peer;
+diff --git a/lib/peer.ts b/lib/peer.ts
+index 6fa306c..d4bbd1b 100644
+--- a/lib/peer.ts
++++ b/lib/peer.ts
+@@ -119,7 +119,7 @@ export class Peer extends EventEmitterWithError<PeerErrorType, PeerEvents> {
+ 		binary: BinaryPack,
+ 		"binary-utf8": BinaryPack,
+ 
+-		default: BinaryPack,
++		default: Json,
+ 	};
+ 	private readonly _options: PeerOptions;
+ 	private readonly _api: API;
+@@ -238,11 +238,6 @@ export class Peer extends EventEmitterWithError<PeerErrorType, PeerEvents> {
+ 		this._options = options;
+ 		this._serializers = { ...this._serializers, ...this.options.serializers };
+ 
+-		// Detect relative URL host.
+-		if (this._options.host === "/") {
+-			this._options.host = window.location.hostname;
+-		}
+-
+ 		// Set path correctly.
+ 		if (this._options.path) {
+ 			if (this._options.path[0] !== "/") {
+diff --git a/lib/supports.ts b/lib/supports.ts
+index c06c105..835c067 100644
+--- a/lib/supports.ts
++++ b/lib/supports.ts
+@@ -1,9 +1,3 @@
+-import webRTCAdapter_import from "webrtc-adapter";
+-
+-const webRTCAdapter: typeof webRTCAdapter_import =
+-	//@ts-ignore
+-	webRTCAdapter_import.default || webRTCAdapter_import;
+-
+ export const Supports = new (class {
+ 	readonly isIOS =
+ 		typeof navigator !== "undefined"
+@@ -36,40 +30,15 @@ export const Supports = new (class {
+ 	}
+ 
+ 	getBrowser(): string {
+-		return webRTCAdapter.browserDetails.browser;
++		return 'chrome'
+ 	}
+ 
+ 	getVersion(): number {
+-		return webRTCAdapter.browserDetails.version || 0;
++		return this.minChromeVersion;
+ 	}
+ 
+ 	isUnifiedPlanSupported(): boolean {
+-		const browser = this.getBrowser();
+-		const version = webRTCAdapter.browserDetails.version || 0;
+-
+-		if (browser === "chrome" && version < this.minChromeVersion) return false;
+-		if (browser === "firefox" && version >= this.minFirefoxVersion) return true;
+-		if (
+-			!window.RTCRtpTransceiver ||
+-			!("currentDirection" in RTCRtpTransceiver.prototype)
+-		)
+-			return false;
+-
+-		let tempPc: RTCPeerConnection;
+-		let supported = false;
+-
+-		try {
+-			tempPc = new RTCPeerConnection();
+-			tempPc.addTransceiver("audio");
+-			supported = true;
+-		} catch (e) {
+-		} finally {
+-			if (tempPc) {
+-				tempPc.close();
+-			}
+-		}
+-
+-		return supported;
++		return true;
+ 	}
+ 
+ 	toString(): string {
