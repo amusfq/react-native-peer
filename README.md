@@ -14,7 +14,7 @@ npm install rn-peer
 or
 
 ```sh
-yarn install rn-peer
+yarn add rn-peer
 ```
 
 ## Usage
