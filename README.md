@@ -5,26 +5,20 @@ This wrapper uses PeerJS v1.5.4
 
 ## Getting started
 
-### To install and start using rn-peer
+### To install and start using react-native-peer
 
 ```sh
-npm install rn-peer
-```
-
-or
-
-```sh
-yarn add rn-peer
+yarn add 'react-native-peer@https://github.com/amusfq/react-native-peer'
 ```
 
 ## Usage
 
-To use rn-peer, `import` the `rn-peer` module and use the `Peer`.
+To use rn-peer, `import` the `react-native-peer` module and use the `Peer`.
 
 Here is an example of basic usage:
 
 ```js
-import Peer from 'rn-peer';
+import Peer from 'react-native-peer';
 
 const globalPeer = new Peer();
 globalPeer.on('error', console.log);
