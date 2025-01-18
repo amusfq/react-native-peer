@@ -1,5 +1,5 @@
 {
-  "name": "rn-peer",
+  "name": "react-native-peer",
   "version": "1.0.0",
   "description": "A React Native wrapper for [PeerJS](https://peerjs.com/). PeerJS simplifies WebRTC peer-to-peer data, video, and audio calls.",
   "keywords": [
@@ -9,22 +9,22 @@
     "peer",
     "peerjs",
     "peer-to-peer",
-    "rn-peer",
-    "rn-peerjs",
+    "react-native-peer",
+    "react-native-peerjs",
     "react-native-webrtc"
   ],
-  "repository": "https://github.com/braian98/rn-peer",
-  "author": "Braian98 <braian794@gmail.com> (https://github.com/braian98)",
+  "repository": "https://github.com/amusfq/react-native-peer",
+  "author": "Amusfq <amusfq@gmail.com> (https://github.com/amusfq)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/braian98/rn-peer/issues"
+    "url": "https://github.com/amusfq/react-native-peer/issues"
   },
-  "homepage": "https://github.com/braian98/rn-peer#readme",
+  "homepage": "https://github.com/braian98/react-native-peer#readme",
   "scripts": {
     "build": "./build.sh",
     "prepare": "./build.sh"
   },
-  "main": "dist/rn-peer.js",
+  "main": "dist/react-native-peer.js",
   "types": "dist/index.d.ts",
   "devDependencies": {
     "parcel": "1.12.3",
